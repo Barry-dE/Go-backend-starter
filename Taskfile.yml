@@ -1,0 +1,67 @@
+# Taskfile version
+version: "3"
+
+# Global variables
+vars:
+  # Database connection string, can be overridden by environment or CLI
+  BOILERPLATE_DB_DSN: '{{.BOILERPLATE_DB_DSN | default ""}}'
+
+# Task definitions
+tasks:
+  # Show all available tasks
+  help:
+    desc: print this help message
+    cmds:
+      - task --list-all
+    silent: true
+
+  # Prompt user for confirmation before running a task
+  confirm:
+    desc: confirmation prompt
+    cmds:
+      - |
+        echo -n 'Are you sure? [y/N] ' && read ans && [ ${ans:-N} = y ]
+    silent: true
+    internal: true
+
+  # Run the main Go application
+  run:
+    desc: run the cmd/go-boilerplate application
+    cmds:
+      - go run ./cmd/go-boilerplate
+
+  # Create a new database migration file
+  migrations:new:
+    desc: create a new database migration
+    vars:
+      # Name of the migration, required parameter
+      NAME: '{{.name | default ""}}'
+    cmds:
+      - |
+        # Check if migration name is provided
+        if [ -z "{{.NAME}}" ]; then
+          echo "Error: name parameter is required"
+          echo "Usage: task migrations:new name=migration_name"
+          exit 1
+        fi
+      - echo 'Creating migration file for {{.NAME}}...'
+      - tern new -m ./internal/database/migrations {{.NAME}}
+
+  # Apply all up (forward) database migrations
+  migrations:up:
+    desc: apply all up database migrations
+    deps: [confirm]
+    cmds:
+      - echo 'Running up migrations...'
+      - tern migrate -m ./internal/database/migrations --conn-string {{.BOILERPLATE_DB_DSN}}
+
+  # Format Go files, tidy and verify Go module dependencies
+  tidy:
+    desc: format all .go files, and tidy and vendor module dependencies
+    cmds:
+      - echo 'Formatting .go files...'
+      - go fmt ./...
+      - echo 'Tidying module dependencies...'
+      - go mod tidy
+      - echo 'Verifying dependencies...'
+      - go mod verify
