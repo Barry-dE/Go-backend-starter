@@ -79,7 +79,7 @@ func (m *MonitoringConfig) Validate() error {
 	return nil
 }
 
-// Get log level
+// Get current log level
 func (m *MonitoringConfig) GetLogLevel() string {
 	switch m.Environment {
 	case "production":
@@ -94,6 +94,6 @@ func (m *MonitoringConfig) GetLogLevel() string {
 	return m.Logging.Level
 }
 
-func (m *MonitoringConfig) isProductin() bool {
+func (m *MonitoringConfig) IsProductin() bool {
 	return m.Environment == "production"
 }
