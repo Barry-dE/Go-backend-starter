@@ -126,7 +126,7 @@ func NewDatabaseConnectionPool(cfg *config.Config, logger *zerolog.Logger, logge
 	return database, nil
 }
 
-// Graceful shutdown DB
+// Close gracefully shuts down the database connection pool.
 func (db *Database) Close() error{
 db.log.Info().Msg("Closing database connection pool")
 db.Pool.Close()
