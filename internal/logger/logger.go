@@ -101,7 +101,7 @@ func NewLoggerWithService(cfg *config.MonitoringConfig, loggerservice *LoggerSer
 		logLevel = zerolog.WarnLevel
 	case "error":
 		logLevel = zerolog.ErrorLevel
-	
+
 	default:
 		logLevel = zerolog.InfoLevel
 	}
@@ -171,6 +171,7 @@ func FormatSQLWithArgs(sqlStr string, args []any) string {
 //   - Long strings are truncated to 200 characters.
 //   - JSON byte slices are pretty-printed for readability.
 //   - Other values are stringified.
+//
 // Each log entry includes a timestamp and a "component=database" field.
 // This is useful only in development to inspect SQL queries and parameters
 // without overwhelming the logs, to make debugging and query analysis easier.
@@ -221,4 +222,3 @@ func GetDBTraceLogLevel(level zerolog.Level) int {
 		return 0
 	}
 }
-
