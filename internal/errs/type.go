@@ -61,6 +61,6 @@ func NotFoundError(message string, override bool, code *string) *HttpError {
 	}
 }
 
-func validationError(err error) *HttpError {
+func validationError() *HttpError {
 	return BadRequestError("validation unsuccessful", false, nil, nil, nil)
 }
