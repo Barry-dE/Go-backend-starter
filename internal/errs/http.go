@@ -30,12 +30,12 @@ type FieldError struct {
 
 // HttpError represents a structured error for HTTP responses.
 type HttpError struct {
-	Code     string `json:"code"`
-	Status   int    `json:"status"`
-	Message  string `json:"message"`
-	Override bool `json:"override"`
-	Action   *Action `json:"action,omitempty"`
-	Errors  []FieldError `json:"fields,omitempty"`
+	Code     string       `json:"code"`
+	Status   int          `json:"status"`
+	Message  string       `json:"message"`
+	Override bool         `json:"override"`
+	Action   *Action      `json:"action,omitempty"`
+	Errors   []FieldError `json:"fields,omitempty"`
 }
 
 func (e *HttpError) Error() string {
@@ -43,24 +43,22 @@ func (e *HttpError) Error() string {
 }
 
 func (e *HttpError) Is(target error) bool {
-	_, ok:= target.(*HttpError)
+	_, ok := target.(*HttpError)
 
-return ok
+	return ok
 }
 
-func (e *HttpError) WithMessage(message string) *HttpError{
+func (e *HttpError) WithMessage(message string) *HttpError {
 	return &HttpError{
-		Code:  e.Code,
-		Status: e.Status,
-		Message: message,
+		Code:     e.Code,
+		Status:   e.Status,
+		Message:  message,
 		Override: e.Override,
-		Action: e.Action,
-		Errors: e.Errors,
-		
+		Action:   e.Action,
+		Errors:   e.Errors,
 	}
 }
 
 func MakeUpperCaseWithUnderscores(s string) string {
-	return strings.ToUpper( strings.ReplaceAll(s, " ", "_") )
+	return strings.ToUpper(strings.ReplaceAll(s, " ", "_"))
 }
-
