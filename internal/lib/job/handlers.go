@@ -1,4 +1,3 @@
-// This handler unctions process the task
 package job
 
 import (
@@ -12,27 +11,32 @@ import (
 	"github.com/rs/zerolog"
 )
 
-
 var emailClient *email.Client
 
+// InitHandlers initializes dependencies required by the job handlers.
 func (j *JobService) InitHandlers(config *config.Config, logger *zerolog.Logger) {
 	emailClient = email.NewClient(config, logger)
 }
 
 func (j *JobService) handleWelcomeEmailTask(ctx context.Context, t *asynq.Task) error {
 	var p WelcomeEmailTaskPayload
+	
+	// Decode the task payload from JSON into a Go struct.
 	if err := json.Unmarshal(t.Payload(), &p); err != nil {
 		return fmt.Errorf("failed to unmarshal welcome email payload: %w", err)
 	}
 
+	// Log that the task is being processed.
 	j.logger.Info().Str("type", "welcome").Str("to", p.To).Msg("processing welcome email task")
 
+	// Attempt to send the welcome email to the specified recipient.
 	err := emailClient.SendWelcomeEmail(p.To, p.FirstName)
 	if err != nil {
 		j.logger.Error().Str("type", "welcome").Str("to", p.To).Err(err).Msg("welcome email sending failed")
 		return err
 	}
 
+	// Log successful completion of the email task.
 	j.logger.Info().Str("type", "welcome").Str("to", p.To).Msg("successfully sent welcome email")
 
 	return nil
