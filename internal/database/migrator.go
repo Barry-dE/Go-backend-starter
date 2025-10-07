@@ -70,6 +70,6 @@ func Migrate(ctx context.Context, logger *zerolog.Logger, cfg *config.Config) er
 	} else {
 		logger.Info().Msgf("Database migrated from version %d to %d", version, len(migrator.Migrations))
 	}
-	
+
 	return nil
 }
