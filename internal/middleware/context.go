@@ -11,9 +11,19 @@ import (
 )
 
 const (
-	loggerKey   = "logger"
+	
 	UserRoleKey = "user_role"
 	UserIDkEY   = "user_id"
+)
+
+
+// contextKey is unexported so other packages can't collide with our keys.
+// the pointer value ensures a unique, comparable key.
+type contextKey struct{ name string }
+
+var (
+	loggerKey     = &contextKey{name: "logger"} // for context.WithValue
+	echoLoggerKey = "logger"              // for echo's context
 )
 
 // ContextEnhancer is a middleware responsible for enriching the request context
@@ -57,7 +67,7 @@ func (ce *ContextEnhancer) EnhanceContext() echo.MiddlewareFunc {
 			}
 
 			// Store the enhanced logger in Echo’s context so handlers can access it
-			c.Set(loggerKey, &contextLogger)
+			c.Set(echoLoggerKey, &contextLogger)
 
 			// create a new context with the logger
 			ctx := context.WithValue(c.Request().Context(), loggerKey, &contextLogger)
@@ -86,7 +96,7 @@ func (ce *ContextEnhancer) getUserRole(c echo.Context) string {
 }
 
 func GetLogger(c echo.Context) *zerolog.Logger {
-	if lg, ok := c.Get(loggerKey).(*zerolog.Logger); ok && lg != nil {
+	if lg, ok := c.Get(echoLoggerKey).(*zerolog.Logger); ok && lg != nil {
 		return lg
 	}
 
