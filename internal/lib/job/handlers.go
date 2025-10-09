@@ -20,7 +20,7 @@ func (j *JobService) InitHandlers(config *config.Config, logger *zerolog.Logger)
 
 func (j *JobService) handleWelcomeEmailTask(ctx context.Context, t *asynq.Task) error {
 	var p WelcomeEmailTaskPayload
-	
+
 	// Decode the task payload from JSON into a Go struct.
 	if err := json.Unmarshal(t.Payload(), &p); err != nil {
 		return fmt.Errorf("failed to unmarshal welcome email payload: %w", err)
