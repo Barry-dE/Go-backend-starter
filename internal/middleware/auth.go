@@ -23,10 +23,10 @@ func NewAuthMiddleware(s *server.Server) *AuthMiddleware {
 		server: s,
 	}
 }
-
-// Authenticate checks if the incoming request is from an authenticated user.
-// It uses Clerk for authentication and extracts user session claims.
-// If authentication fails, it returns a JSON response with a 401 status code.
+// Authenticate is an Echo middleware that checks if the incoming request is authenticated via Clerk.
+// It wraps Clerk's HTTP middleware to handle Authorization headers and session validation.
+// On authentication failure, it returns a JSON 401 response and logs the error.
+// On success, it extracts user claims from the context and stores them for downstream handlers.
 func (auth *AuthMiddleware) Authenticate(next echo.HandlerFunc) echo.HandlerFunc {
 	return echo.WrapMiddleware(
 		// This wraps Clerk’s HTTP middleware to handle Authorization headers and manage session validation automatically.
@@ -50,6 +50,7 @@ func (auth *AuthMiddleware) Authenticate(next echo.HandlerFunc) echo.HandlerFunc
 					auth.server.Logger.Error().Err(err).Str("function", "Authenticte").Dur(
 						"duration", time.Since(start)).Msg("failed to write JSON response")
 				} else {
+					// Secondary error log if JSON was written successfully
 					auth.server.Logger.Error().Str("function", "Authenticate").Dur("duration", time.Since(start)).Msg(
 						"could not get session claims from context")
 				}
