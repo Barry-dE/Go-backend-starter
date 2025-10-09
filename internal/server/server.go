@@ -76,7 +76,6 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerPackag
 	return server, nil
 }
 
-
 // ConfigureHTTPServer sets up the HTTP server with the provided handler and configuration values.
 // It applies timeouts and port settings from the server configuration.
 func (s *Server) ConfigureHTTPServer(handler http.Handler) {
