@@ -15,8 +15,8 @@ import (
 	"golang.org/x/text/language"
 )
 
-// ErrCode extracts the error code from a database error.
-// Returns Other if the error is nil or not a database error.
+// ErrCode extracts the mapped error code from a database error.
+// If the provided error is nil or not a database-related error, it returns Other.
 func ErrCode(err error) Code {
 	var pgerr *Error
 	if errors.As(err, &pgerr) {
@@ -25,7 +25,8 @@ func ErrCode(err error) Code {
 	return Other
 }
 
-// ConvertPgError transforms a pgx database error into our structured Error type.
+// ConvertPgError transforms a native pgx.PgError into a structured Error type
+// used throughout the application. This standardizes database error handling.
 func ConvertPgError(src *pgconn.PgError) *Error {
 	return &Error{
 		Code:           MapDatabaseErrorCode(src.Code),
@@ -41,15 +42,16 @@ func ConvertPgError(src *pgconn.PgError) *Error {
 	}
 }
 
-// generateErrorCode builds standardized error codes by combining the table name with error type.
-// Format: TABLENAME_ACTION (e.g., USER_ALREADY_EXISTS, PRODUCT_NOT_FOUND).
+// generateErrorCode builds a standardized application-level error code
+// by combining the table name and the type of database error.
+// Example output: USER_ALREADY_EXISTS, PRODUCT_NOT_FOUND, etc.
 func generateErrorCode(tableName string, errType Code) string {
 	if tableName == "" {
 		tableName = "RECORD"
 	}
 
 	domain := strings.ToUpper(tableName)
-// Remove trailing 's' to get singular form
+	// Remove trailing 's' for singular naming consistency
 	if strings.HasSuffix(domain, "S") && len(domain) > 1 {
 		domain = domain[:len(domain)-1]
 	}
@@ -69,7 +71,8 @@ func generateErrorCode(tableName string, errType Code) string {
 	return fmt.Sprintf("%s_%s", domain, action)
 }
 
-// formatUserFriendlyMessage converts technical database errors into user-readable messages.
+// formatUserFriendlyMessage converts low-level database error details
+// into human-readable error messages that can be safely returned to API clients.
 func formatUserFriendlyMessage(sqlErr *Error) string {
 	entityName := getEntityName(sqlErr.TableName, sqlErr.ColumnName)
 
@@ -95,9 +98,10 @@ func formatUserFriendlyMessage(sqlErr *Error) string {
 	}
 }
 
-// getEntityName extracts entity name from database information with consistent rules
+// getEntityName determines the most appropriate entity name
+// from the table and column names for use in error messages.
 func getEntityName(tableName, columnName string) string {
-	// First priority: column name logic (most reliable for FK relationships)
+	// Priority 1: Use column name if it ends with "_id" (typical for FK references)
 	if columnName != "" && strings.HasSuffix(strings.ToLower(columnName), "_id") {
 		entity := strings.TrimSuffix(strings.ToLower(columnName), "_id")
 		return humanizeText(entity)
@@ -117,7 +121,8 @@ func getEntityName(tableName, columnName string) string {
 	return "record"
 }
 
-// humanizeText converts snake_case to human-readable text
+// humanizeText converts snake_case identifiers into human-readable words
+// and capitalizes them for better UX. Example: "user_email" -> "User Email".
 func humanizeText(text string) string {
 	if text == "" {
 		return ""
@@ -125,7 +130,8 @@ func humanizeText(text string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(text, "_", " "))
 }
 
-// extractColumnForUniqueViolation gets field name from unique constraint
+// extractColumnForUniqueViolation tries to infer the column name that caused
+// a unique constraint violation based on the database constraint naming conventions.
 func extractColumnForUniqueViolation(constraintName string) string {
 	if constraintName == "" {
 		return ""
@@ -149,7 +155,9 @@ func extractColumnForUniqueViolation(constraintName string) string {
 	return ""
 }
 
-// HandleError processes a database error into an appropriate application error
+// HandleError processes raw database errors into standardized HTTP errors
+// that align with the application's error handling strategy.
+// It converts Postgres errors, maps common codes, and builds user-friendly messages.
 func HandleError(err error) error {
 	// If it's already a custom HTTP error, just return it
 	var httpErr *errs.HttpError
@@ -194,7 +202,7 @@ func HandleError(err error) error {
 		}
 	}
 
-	// Handle common pgx errors
+	// Handle "no rows" results 
 	switch {
 	case errors.Is(err, pgx.ErrNoRows), errors.Is(err, sql.ErrNoRows):
 		errMsg := err.Error()

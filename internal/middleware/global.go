@@ -14,20 +14,20 @@ import (
 
 // GlobalMiddleWares bundles all middlewares used across the application.
 // It keeps a reference to the main server, giving middlewares access to configuration and utilities.
-type GlobalMiddleWare struct {
+type GlobalMiddleware struct {
 	server *server.Server
 }
 
 // NewGlobalMiddleWares initializes and returns a GlobalMiddleWares instance.
-func NewGlobalMiddleWare(s *server.Server) *GlobalMiddleWare {
-	return &GlobalMiddleWare{
+func NewGlobalMiddleWare(s *server.Server) *GlobalMiddleware {
+	return &GlobalMiddleware{
 		server: s,
 	}
 }
 
 // CORS configures Cross-Origin Resource Sharing using allowed origins from server config.
 // This enables browsers to safely call the API from specified domains.
-func (gm *GlobalMiddleWare) CORS() echo.MiddlewareFunc {
+func (gm *GlobalMiddleware) CORS() echo.MiddlewareFunc {
 	return echoMiddleware.CORSWithConfig(echoMiddleware.CORSConfig{
 		AllowOrigins: gm.server.Config.Server.CORSAllowedOrigin,
 	})
@@ -36,7 +36,7 @@ func (gm *GlobalMiddleWare) CORS() echo.MiddlewareFunc {
 
 // RequestLogger logs every HTTP request passing through the server.
 // It captures request details, latency, and errors, using structured logging via zerolog.
-func (gm *GlobalMiddleWare) RequestLogger() echo.MiddlewareFunc {
+func (gm *GlobalMiddleware) RequestLogger() echo.MiddlewareFunc {
 	return echoMiddleware.RequestLoggerWithConfig(echoMiddleware.RequestLoggerConfig{
 		LogURI:     true,
 		LogMethod:  true,
@@ -99,19 +99,19 @@ func (gm *GlobalMiddleWare) RequestLogger() echo.MiddlewareFunc {
 }
 
 // Secure adds security-related headers to all responses (e.g., preventing clickjacking, XSS, etc.)
-func (gm *GlobalMiddleWare) Secure() echo.MiddlewareFunc {
+func (gm *GlobalMiddleware) Secure() echo.MiddlewareFunc {
 	return echoMiddleware.Secure()
 }
 
 // Recover gracefully handles panics to prevent the server from crashing.
 // It logs the panic and returns a generic 500 error to the client.
-func (gm *GlobalMiddleWare) Recover() echo.MiddlewareFunc {
+func (gm *GlobalMiddleware) Recover() echo.MiddlewareFunc {
 	return echoMiddleware.Recover()
 }
 
 // GlobalErrorHandler provides centralized handling for any unhandled error in the app.
 // It ensures consistent JSON error responses and detailed server-side logging.
-func (gm *GlobalMiddleWare) GlobalErrorHandler(err error, c echo.Context) {
+func (gm *GlobalMiddleware) GlobalErrorHandler(err error, c echo.Context) {
 	
 	// Preserve stack trace and raw diagnostic info of original error for logging.
 	originalErr := err

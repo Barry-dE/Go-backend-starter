@@ -85,7 +85,7 @@ func MapDatabaseSeverity(severity string) Severity {
 	}
 }
 
-// Error represents a structured database error
+// Error represents a structured database error.
 type Error struct {
 	Code           Code
 	Severity       Severity
