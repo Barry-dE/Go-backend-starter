@@ -45,7 +45,9 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.0 // indirect
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/zerologWriter v1.0.5 // indirect
+	github.com/newrelic/go-agent/v3/integrations/nrecho-v4 v1.1.5 // indirect
 	github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.3.2 // indirect
+	github.com/newrelic/go-agent/v3/integrations/nrpkgerrors v1.1.0 // indirect
 	github.com/newrelic/go-agent/v3/integrations/nrredis-v9 v1.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/redis/go-redis/v9 v9.14.0 // indirect
