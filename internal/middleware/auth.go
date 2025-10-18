@@ -23,6 +23,7 @@ func NewAuthMiddleware(s *server.Server) *AuthMiddleware {
 		server: s,
 	}
 }
+
 // Authenticate is an Echo middleware that checks if the incoming request is authenticated via Clerk.
 // It wraps Clerk's HTTP middleware to handle Authorization headers and session validation.
 // On authentication failure, it returns a JSON 401 response and logs the error.

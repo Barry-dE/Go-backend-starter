@@ -11,11 +11,9 @@ import (
 )
 
 const (
-	
 	UserRoleKey = "user_role"
 	UserIDkEY   = "user_id"
 )
-
 
 // contextKey is unexported so other packages can't collide with our keys.
 // the pointer value ensures a unique, comparable key.
@@ -23,7 +21,7 @@ type contextKey struct{ name string }
 
 var (
 	loggerKey     = &contextKey{name: "logger"} // for context.WithValue
-	echoLoggerKey = "logger"              // for echo's context
+	echoLoggerKey = "logger"                    // for echo's context
 )
 
 // ContextEnhancer is a middleware responsible for enriching the request context
