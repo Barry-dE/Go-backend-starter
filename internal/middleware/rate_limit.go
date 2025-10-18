@@ -6,7 +6,7 @@ type RateLimiterMiddleware struct {
 	server *server.Server
 }
 
-func (rl *RateLimiterMiddleware) NewRateLimiter(s *server.Server) *RateLimiterMiddleware {
+func NewRateLimiter(s *server.Server) *RateLimiterMiddleware {
 	return &RateLimiterMiddleware{
 		server: s,
 	}
