@@ -66,7 +66,7 @@ func (h *HealthHandler) HealthCheck(c echo.Context) error {
 
 	} else {
 		checks["database"] = map[string]interface{}{
-			"status":           "healthy",
+			"status":        "healthy",
 			"response_time": time.Since(databaseTimerStart).String(),
 		}
 		logger.Info().Dur("response_time_ms", time.Since(databaseTimerStart)).Msg("database health check succeeded")
@@ -89,7 +89,6 @@ func (h *HealthHandler) HealthCheck(c echo.Context) error {
 
 			logger.Error().Err(err).Dur("response_time", time.Since(redisStartTimer)).Msg("redis health check failed")
 
-			
 			if h.server.LoggerService != nil && h.server.LoggerService.GetNewRelicApp() != nil {
 				h.server.LoggerService.GetNewRelicApp().RecordCustomEvent("HealthCheckError", map[string]interface{}{
 					"operation":        "health_check",
@@ -99,9 +98,9 @@ func (h *HealthHandler) HealthCheck(c echo.Context) error {
 					"error_message":    err.Error(),
 				})
 			}
-		}else{
+		} else {
 			checks["redis"] = map[string]interface{}{
-				"status": "healthy",
+				"status":        "healthy",
 				"response_time": time.Since(redisStartTimer).String(),
 			}
 
@@ -110,17 +109,17 @@ func (h *HealthHandler) HealthCheck(c echo.Context) error {
 	}
 
 	// Overall health status
-	if !isHealthy{
-		
+	if !isHealthy {
+
 		response["status"] = "unhealthy"
-		
+
 		logger.Warn().Dur("total_duration", time.Since(start)).Msg("health check failed")
 
 		if h.server.LoggerService != nil && h.server.LoggerService.GetNewRelicApp() != nil {
 			h.server.LoggerService.GetNewRelicApp().RecordCustomEvent("HealthCheckError", map[string]interface{}{
-				"operation":        "health_check",
-				"check_type":       "overall_health",
-				"error_type":       "overall_unhealthy",
+				"operation":              "health_check",
+				"check_type":             "overall_health",
+				"error_type":             "overall_unhealthy",
 				"total_response_time_ms": time.Since(start).Milliseconds(),
 			})
 		}
@@ -129,24 +128,22 @@ func (h *HealthHandler) HealthCheck(c echo.Context) error {
 	}
 
 	logger.Info().Dur("total_duration", time.Since(start)).Msg("health check succeeded")
-	
-	if err := c.JSON(http.StatusOK, response); err != nil{
-		
+
+	if err := c.JSON(http.StatusOK, response); err != nil {
+
 		logger.Error().Err(err).Msg("failed to write JSON response")
-	  
+
 		if h.server.LoggerService != nil && h.server.LoggerService.GetNewRelicApp() != nil {
-		h.server.LoggerService.GetNewRelicApp().RecordCustomEvent("HealthCheckError", map[string]interface{}{
-			"operation": "health_check",
-			"check_type": "response",
-			"error_type": "json_response",
-			"error_message": err.Error(),
+			h.server.LoggerService.GetNewRelicApp().RecordCustomEvent("HealthCheckError", map[string]interface{}{
+				"operation":     "health_check",
+				"check_type":    "response",
+				"error_type":    "json_response",
+				"error_message": err.Error(),
+			})
+		}
 
-		})
-	  }
-
-	  return fmt.Errorf("failed to write JSON response: %w", err)
+		return fmt.Errorf("failed to write JSON response: %w", err)
 	}
-
 
 	return nil
 }
