@@ -11,11 +11,11 @@ type Services struct {
 	Job         *job.JobService
 }
 
-func NewService(s *server.Server, repos *repository.Repositories) (*Services, error){
+func NewService(s *server.Server, repos *repository.Repositories) (*Services, error) {
 	authService := NewAuthService(s)
 
 	return &Services{
 		AuthService: authService,
-		Job: s.Job,
+		Job:         s.Job,
 	}, nil
 }

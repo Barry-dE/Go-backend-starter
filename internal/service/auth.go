@@ -9,7 +9,7 @@ type AuthService struct {
 	server *server.Server
 }
 
-func NewAuthService(s *server.Server) *AuthService{
+func NewAuthService(s *server.Server) *AuthService {
 	clerk.SetKey(s.Config.Auth.SecretKey)
 	return &AuthService{
 		server: s,

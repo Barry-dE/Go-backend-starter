@@ -202,7 +202,7 @@ func HandleError(err error) error {
 		}
 	}
 
-	// Handle "no rows" results 
+	// Handle "no rows" results
 	switch {
 	case errors.Is(err, pgx.ErrNoRows), errors.Is(err, sql.ErrNoRows):
 		errMsg := err.Error()
