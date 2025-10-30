@@ -34,11 +34,11 @@ type Integration struct {
 }
 
 type ServerConfig struct {
-	Port              string   `koanf:"port" validate:"required"`
-	ReadTimeout       int      `koanf:"read_timeout" validate:"required"`
-	WriteTimeout      int      `koanf:"write_timeout" validate:"required"`
-	IdleTimeout       int      `koanf:"idle_timeout" validate:"required"`
-	CORSAllowedOrigin []string `koanf:"cors_allow_origin" validate:"required"`
+	Port               string   `koanf:"port" validate:"required"`
+	ReadTimeout        int      `koanf:"read_timeout" validate:"required"`
+	WriteTimeout       int      `koanf:"write_timeout" validate:"required"`
+	IdleTimeout        int      `koanf:"idle_timeout" validate:"required"`
+	CORSAllowedOrigins []string `koanf:"cors_allowed_origins" validate:"required"`
 }
 
 type RedisConfig struct {
@@ -58,15 +58,16 @@ type DatabaseConfig struct {
 	ConnectionMaxLifeTime int    `koanf:"connection_max_life_time" validate:"required"`
 }
 
-func loadConfig() (*Config, error) {
+func LoadConfig() (*Config, error) {
 
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
 
 	k := koanf.New(".")
 
-	err := k.Load(env.Provider("PLACEHOLDER_", ".", func(s string) string {
-		return strings.ToLower(strings.TrimPrefix(s, "PLACEHOLDER_"))
+	err := k.Load(env.Provider("BOILERPLATE_", ".", func(s string) string {
+		return strings.ToLower(strings.TrimPrefix(s, "BOILERPLATE_"))
 	}), nil)
+
 	if err != nil {
 		logger.Fatal().Err(err).Msg("There was a problem loading initial environment variables")
 	}
