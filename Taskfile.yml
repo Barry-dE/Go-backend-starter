@@ -1,6 +1,5 @@
-# Taskfile version
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
-
 # Global variables
 vars:
   # Database connection string, can be overridden by environment or CLI
