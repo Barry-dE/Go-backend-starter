@@ -17,7 +17,7 @@ type NewRelicConfig struct {
 	LicenseKey                string `koanf:"license_key" validate:"required"`
 	DebugLogging              bool   `koanf:"debug_logging"`
 	DistributedTracingEnabled bool   `koanf:"distributed_tracing_enabled"`
-	AppLogForwardingEnabled   bool   `koanf:"app_log_forwarding"`
+	AppLogForwardingEnabled   bool   `koanf:"app_log_forwarding_enabled"`
 }
 
 type LoggingConfig struct {
